@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
 
 namespace LinkShortener.Api.Data;
 
@@ -13,6 +14,15 @@ public sealed class EfLinkRepository(LinkDbContext db) : ILinkRepository
     public async Task AddAsync(Link link, CancellationToken cancellationToken = default)
     {
         db.Links.Add(link);
-        await db.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await db.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException exception) when (exception.InnerException is SqliteException
+            { SqliteErrorCode: 19, SqliteExtendedErrorCode: 2067 })
+        {
+            db.Entry(link).State = EntityState.Detached;
+            throw new DuplicateCodeException();
+        }
     }
 }

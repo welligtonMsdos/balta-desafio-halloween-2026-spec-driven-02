@@ -1,6 +1,4 @@
 using LinkShortener.Api.Data;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
 
 namespace LinkShortener.Api.Application;
 
@@ -23,21 +21,24 @@ public sealed class LinkService(
         if (customCode is not null && await repository.CodeExistsAsync(customCode, cancellationToken))
             return CreateLinkResult.Duplicate();
 
-        var link = new Link
+        for (var attempt = 0; attempt < 32; attempt++)
         {
-            Code = customCode ?? generator.Generate(),
-            TargetUrl = targetUrl!,
-            CreatedAtUtc = clock.GetUtcNow()
-        };
-        try
-        {
-            await repository.AddAsync(link, cancellationToken);
+            var link = new Link
+            {
+                Code = customCode ?? generator.Generate(),
+                TargetUrl = targetUrl!,
+                CreatedAtUtc = clock.GetUtcNow()
+            };
+            try
+            {
+                await repository.AddAsync(link, cancellationToken);
+                return CreateLinkResult.Success(link);
+            }
+            catch (DuplicateCodeException)
+            {
+                if (customCode is not null) return CreateLinkResult.Duplicate();
+            }
         }
-        catch (DbUpdateException exception) when (customCode is not null &&
-            exception.InnerException is SqliteException { SqliteErrorCode: 19 })
-        {
-            return CreateLinkResult.Duplicate();
-        }
-        return CreateLinkResult.Success(link);
+        return CreateLinkResult.Exhausted();
     }
 }

@@ -7,4 +7,5 @@ public sealed record CreateLinkResult(Link? Link, string? Error, bool Conflict =
     public static CreateLinkResult Success(Link link) => new(link, null);
     public static CreateLinkResult Invalid(string error) => new(null, error);
     public static CreateLinkResult Duplicate() => new(null, "O código informado já está em uso.", true);
+    public static CreateLinkResult Exhausted() => new(null, "Não foi possível gerar um código único.");
 }
