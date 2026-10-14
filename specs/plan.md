@@ -29,6 +29,8 @@ do projeto.
   `Microsoft.AspNetCore.Mvc.Testing`: testes unitários e de integração
   exigidos pela constituição
 - `coverlet.collector`: cobertura dos testes instalada pelo modelo xUnit do SDK
+- `SQLitePCLRaw.bundle_e_sqlite3` 2.1.14: fixa a biblioteca SQLite nativa
+  transitiva em versão posterior à afetada pelo aviso GHSA-2m69-gcr7-jv3q
 
 ## Modelo de dados
 Link
