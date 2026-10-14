@@ -11,6 +11,11 @@ public sealed class EfLinkRepository(LinkDbContext db) : ILinkRepository
     public Task<bool> CodeExistsAsync(string code, CancellationToken cancellationToken = default) =>
         db.Links.AnyAsync(link => link.Code == code, cancellationToken);
 
+    public async Task IncrementAccessCountAsync(string code, CancellationToken cancellationToken = default) =>
+        await db.Links.Where(link => link.Code == code)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(link => link.AccessCount,
+                link => link.AccessCount + 1), cancellationToken);
+
     public async Task AddAsync(Link link, CancellationToken cancellationToken = default)
     {
         db.Links.Add(link);

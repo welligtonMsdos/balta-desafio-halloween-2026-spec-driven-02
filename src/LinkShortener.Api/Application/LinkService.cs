@@ -8,8 +8,13 @@ public sealed class LinkService(
     TargetUrlValidator validator,
     TimeProvider clock)
 {
-    public async Task<string?> GetDestinationAsync(string code, CancellationToken cancellationToken = default) =>
-        (await repository.FindByCodeAsync(code, cancellationToken))?.TargetUrl;
+    public async Task<string?> GetDestinationAsync(string code, CancellationToken cancellationToken = default)
+    {
+        var link = await repository.FindByCodeAsync(code, cancellationToken);
+        if (link is null) return null;
+        await repository.IncrementAccessCountAsync(code, cancellationToken);
+        return link.TargetUrl;
+    }
 
     public async Task<long?> GetAccessCountAsync(string code, CancellationToken cancellationToken = default) =>
         (await repository.FindByCodeAsync(code, cancellationToken))?.AccessCount;
