@@ -8,6 +8,9 @@ public sealed class LinkService(
     TargetUrlValidator validator,
     TimeProvider clock)
 {
+    public async Task<string?> GetDestinationAsync(string code, CancellationToken cancellationToken = default) =>
+        (await repository.FindByCodeAsync(code, cancellationToken))?.TargetUrl;
+
     public async Task<CreateLinkResult> CreateAsync(string? targetUrl, string? customCode = null,
         CancellationToken cancellationToken = default)
     {

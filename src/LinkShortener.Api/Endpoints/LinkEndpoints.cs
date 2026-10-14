@@ -6,6 +6,12 @@ public static class LinkEndpoints
 {
     public static void MapLinkEndpoints(this WebApplication app)
     {
+        app.MapGet("/{code}", async (string code, LinkService service, CancellationToken cancellationToken) =>
+        {
+            var destination = await service.GetDestinationAsync(code, cancellationToken);
+            return destination is null ? Results.NotFound() : Results.Redirect(destination);
+        });
+
         app.MapPost("/api/links", async (CreateLinkRequest request, HttpContext context,
             LinkService service, CancellationToken cancellationToken) =>
         {
