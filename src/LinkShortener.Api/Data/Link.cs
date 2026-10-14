@@ -6,6 +6,6 @@ public sealed class Link
     public required string Code { get; set; }
     public required string TargetUrl { get; set; }
     public DateTimeOffset CreatedAtUtc { get; set; }
-    public DateTimeOffset? ExpiresAtUtc { get; set; }
+    public DateTime? ExpiresAtUtc { get; set; }
     public long AccessCount { get; set; }
 }

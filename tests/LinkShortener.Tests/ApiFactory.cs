@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace LinkShortener.Tests;
 
-public sealed class ApiFactory : WebApplicationFactory<Program>
+public sealed class ApiFactory(TimeProvider? clock = null) : WebApplicationFactory<Program>
 {
     private readonly string databasePath = Path.Combine(Path.GetTempPath(), $"api-{Guid.NewGuid():N}.db");
 
@@ -25,6 +25,11 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
         {
             services.RemoveAll<IHostAddressResolver>();
             services.AddSingleton<IHostAddressResolver, PublicResolver>();
+            if (clock is not null)
+            {
+                services.RemoveAll<TimeProvider>();
+                services.AddSingleton(clock);
+            }
         });
     }
 

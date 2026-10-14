@@ -34,7 +34,7 @@ namespace LinkShortener.Api.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAtUtc")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("ExpiresAtUtc")
+                    b.Property<DateTime?>("ExpiresAtUtc")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("TargetUrl")

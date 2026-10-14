@@ -27,8 +27,8 @@ public sealed class AutomaticCollisionTests
             Task.FromResult<Link?>(null);
         public Task<bool> CodeExistsAsync(string code, CancellationToken cancellationToken = default) =>
             Task.FromResult(false);
-        public Task IncrementAccessCountAsync(string code, CancellationToken cancellationToken = default) =>
-            Task.CompletedTask;
+        public Task<bool> IncrementAccessCountAsync(string code, DateTime nowUtc,
+            CancellationToken cancellationToken = default) => Task.FromResult(true);
         public Task AddAsync(Link link, CancellationToken cancellationToken = default)
         {
             Attempts++;

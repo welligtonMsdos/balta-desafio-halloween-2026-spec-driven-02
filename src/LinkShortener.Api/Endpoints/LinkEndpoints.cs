@@ -15,14 +15,20 @@ public static class LinkEndpoints
 
         app.MapGet("/{code}", async (string code, LinkService service, CancellationToken cancellationToken) =>
         {
-            var destination = await service.GetDestinationAsync(code, cancellationToken);
-            return destination is null ? Results.NotFound() : Results.Redirect(destination);
+            var result = await service.ResolveAsync(code, cancellationToken);
+            return result.Status switch
+            {
+                ResolveLinkStatus.Missing => Results.NotFound(),
+                ResolveLinkStatus.Expired => Results.StatusCode(410),
+                _ => Results.Redirect(result.TargetUrl!)
+            };
         });
 
         app.MapPost("/api/links", async (CreateLinkRequest request, HttpContext context,
             LinkService service, CancellationToken cancellationToken) =>
         {
-            var result = await service.CreateAsync(request.TargetUrl, request.Code, cancellationToken);
+            var result = await service.CreateAsync(request.TargetUrl, request.Code,
+                request.ExpiresAtUtc, cancellationToken);
             if (result.Error is not null)
                 return Results.Problem(statusCode: result.Conflict ? 409 :
                     result.Error == "Não foi possível gerar um código único." ? 503 : 400, detail: result.Error);
