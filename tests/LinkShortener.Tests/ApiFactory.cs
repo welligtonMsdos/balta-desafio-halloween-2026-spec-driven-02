@@ -9,9 +9,9 @@ using Microsoft.Extensions.Logging;
 
 namespace LinkShortener.Tests;
 
-public sealed class ApiFactory(TimeProvider? clock = null) : WebApplicationFactory<Program>
+public sealed class ApiFactory(TimeProvider? clock = null, string? databasePath = null) : WebApplicationFactory<Program>
 {
-    private readonly string databasePath = Path.Combine(Path.GetTempPath(), $"api-{Guid.NewGuid():N}.db");
+    private readonly string databaseFile = databasePath ?? Path.Combine(Path.GetTempPath(), $"api-{Guid.NewGuid():N}.db");
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -19,7 +19,7 @@ public sealed class ApiFactory(TimeProvider? clock = null) : WebApplicationFacto
         builder.ConfigureAppConfiguration((_, configuration) =>
             configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["ConnectionStrings:Links"] = $"Data Source={databasePath};Pooling=False"
+                ["ConnectionStrings:Links"] = $"Data Source={databaseFile};Pooling=False"
             }));
         builder.ConfigureServices(services =>
         {
