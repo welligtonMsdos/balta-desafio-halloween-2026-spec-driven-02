@@ -9,9 +9,9 @@ public static class LinkEndpoints
         app.MapPost("/api/links", async (CreateLinkRequest request, HttpContext context,
             LinkService service, CancellationToken cancellationToken) =>
         {
-            var result = await service.CreateAsync(request.TargetUrl, cancellationToken);
+            var result = await service.CreateAsync(request.TargetUrl, request.Code, cancellationToken);
             if (result.Error is not null)
-                return Results.Problem(statusCode: 400, detail: result.Error);
+                return Results.Problem(statusCode: result.Conflict ? 409 : 400, detail: result.Error);
 
             var code = result.Link!.Code;
             var shortUrl = $"{context.Request.Scheme}://{context.Request.Host}/{code}";
