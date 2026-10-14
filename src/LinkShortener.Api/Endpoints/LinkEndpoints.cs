@@ -6,6 +6,13 @@ public static class LinkEndpoints
 {
     public static void MapLinkEndpoints(this WebApplication app)
     {
+        app.MapGet("/api/links/{code}/stats", async (string code, LinkService service,
+            CancellationToken cancellationToken) =>
+        {
+            var count = await service.GetAccessCountAsync(code, cancellationToken);
+            return count is null ? Results.NotFound() : Results.Ok(new { code, accessCount = count.Value });
+        });
+
         app.MapGet("/{code}", async (string code, LinkService service, CancellationToken cancellationToken) =>
         {
             var destination = await service.GetDestinationAsync(code, cancellationToken);
