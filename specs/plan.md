@@ -28,6 +28,7 @@ do projeto.
 - `xunit`, `xunit.runner.visualstudio`, `Microsoft.NET.Test.Sdk` e
   `Microsoft.AspNetCore.Mvc.Testing`: testes unitários e de integração
   exigidos pela constituição
+- `coverlet.collector`: cobertura dos testes instalada pelo modelo xUnit do SDK
 
 ## Modelo de dados
 Link
